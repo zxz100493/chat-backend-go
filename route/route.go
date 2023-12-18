@@ -1,7 +1,7 @@
 package route
 
 import (
-	"fmt"
+	"chat-go/app"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,11 +15,9 @@ func NewRoute() *gin.Engine {
 	server := gin.Default()
 	// server.Use(Cors())
 	// server.Use(Recovery)
-	group := server.Group("test")
+	group := server.Group("chat")
 	{
-		group.GET("/user", func(ctx *gin.Context) {
-			fmt.Println(ctx.Params)
-		})
+		group.GET("/test", app.Chat)
 		// group.GET("/user/:uuid", v1.GetUserDetails)
 	}
 	return server
