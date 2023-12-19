@@ -2,14 +2,20 @@ package app
 
 import (
 	"chat-go/app/util"
-	"fmt"
+	"chat-go/infrastructurre/ai/baidu"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Chat(c *gin.Context) {
-	fmt.Println(c.Params)
-	// 如何调用刚才封装的 ResponseJson
-	util.ResponseOk(c, "hello world")
-	// c.JSON(200, gin.H{})
+	msg := c.Query("msg")
+
+	if msg == "" {
+		util.ResponseError(c, "no message")
+		return
+	}
+
+	baidu := baidu.Baidu{}
+	res := baidu.Chat(msg)
+	util.ResponseOk(c, res)
 }
