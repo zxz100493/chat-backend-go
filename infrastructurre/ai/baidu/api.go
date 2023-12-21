@@ -1,6 +1,7 @@
 package baidu
 
 import (
+	"chat-go/infrastructurre/log"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 var (
@@ -24,6 +26,7 @@ func init() {
 }
 
 func (b Baidu) Chat(msg string) string {
+	defer trace()()
 	url := "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + GetAccessToken()
 
 	question := `{"messages":[{"role":"user","content":"` + msg + `"}]}`
@@ -35,6 +38,15 @@ func (b Baidu) Chat(msg string) string {
 	}
 
 	return response
+}
+
+func trace() func() {
+	start := time.Now()
+	log.Logger.Info("before request baidu api", log.String("start_time", start.String()))
+
+	return func() {
+		log.Logger.Info("after request baidu api", log.String("used_time", time.Since(start).String()))
+	}
 }
 
 /**
