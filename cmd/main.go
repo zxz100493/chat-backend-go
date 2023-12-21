@@ -14,7 +14,7 @@ func main() {
 	r := route.NewRoute()
 
 	s := &http.Server{
-		Addr:           ":8000",
+		Addr:           ":8866",
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

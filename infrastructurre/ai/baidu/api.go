@@ -26,7 +26,7 @@ func init() {
 }
 
 func (b Baidu) Chat(msg string) string {
-	defer trace()()
+	defer trace("baidu api")()
 	url := "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + GetAccessToken()
 
 	question := `{"messages":[{"role":"user","content":"` + msg + `"}]}`
@@ -40,12 +40,12 @@ func (b Baidu) Chat(msg string) string {
 	return response
 }
 
-func trace() func() {
+func trace(action string) func() {
 	start := time.Now()
-	log.Logger.Info("before request baidu api", log.String("start_time", start.String()))
+	log.Logger.Info("before "+action, log.String("start_time", start.String()))
 
 	return func() {
-		log.Logger.Info("after request baidu api", log.String("used_time", time.Since(start).String()))
+		log.Logger.Info("after "+action, log.String("used_time", time.Since(start).String()))
 	}
 }
 
@@ -57,6 +57,7 @@ func GetAccessToken() string {
 	url := "https://aip.baidubce.com/oauth/2.0/token"
 	postData := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", ApiKey, ApiSecret)
 	headers := map[string]string{"Content-Type": "application/x-www-form-urlencoded"}
+	defer trace("get access token")()
 
 	response, err := makeRequest(url, "POST", headers, strings.NewReader(postData))
 	if err != nil {
