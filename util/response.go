@@ -2,7 +2,6 @@ package util
 
 import "github.com/gin-gonic/gin"
 
-// 封装一个gin框架的json返回方法
 func responseJson(code int, msg string, data interface{}) map[string]interface{} {
 	return map[string]interface{}{
 		"code": code,

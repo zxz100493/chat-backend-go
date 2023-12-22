@@ -1,8 +1,8 @@
 package app
 
 import (
-	"chat-go/app/util"
 	"chat-go/infrastructurre/ai/baidu"
+	"chat-go/util"
 
 	"github.com/gin-gonic/gin"
 )
