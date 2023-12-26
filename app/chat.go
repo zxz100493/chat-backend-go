@@ -1,7 +1,7 @@
 package app
 
 import (
-	"chat-go/infrastructurre/ai/baidu"
+	"chat-go/services"
 	"chat-go/util"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ func Chat(c *gin.Context) {
 		return
 	}
 
-	baidu := baidu.Baidu{}
-	res := baidu.Chat(msg)
+	res := services.ChatWithAi(msg)
+
 	util.ResponseOk(c, res)
 }
