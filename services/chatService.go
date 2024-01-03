@@ -6,18 +6,17 @@ import (
 	"chat-go/infrastructurre/ai/xunfei"
 )
 
+var AiServiceMap = map[string]repository.AiRepository{
+	"baidu":  gemini.Gemini{},
+	"xunfei": xunfei.Xunfei{},
+	"gemini": gemini.Gemini{},
+}
+
 func ChatWithAi(msg string) interface{} {
 	aiMode := "baidu"
-	var aiSvc repository.AiRepository
-
-	if aiMode == "baidu" {
-		aiSvc = gemini.Gemini{}
-		// aiSvc = baidu.Baidu{}
-	} else if aiMode == "xunfei" {
-		aiSvc = xunfei.Xunfei{}
-	} else if aiMode == "gemini" {
-		aiSvc = gemini.Gemini{}
+	aiSvc, exists := AiServiceMap[aiMode]
+	if !exists {
+		aiSvc = AiServiceMap["gemini"]
 	}
-
 	return aiSvc.Chat(msg)
 }
