@@ -2,6 +2,7 @@ package gemini
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +12,10 @@ import (
 )
 
 type Gemini struct {
+}
+
+type Response struct {
+	Result string `json:"result"`
 }
 
 func (g Gemini) Chat(msg string) string {
@@ -24,30 +29,38 @@ func (g Gemini) Chat(msg string) string {
 
 	// For text-only input, use the gemini-pro model
 	model := client.GenerativeModel("gemini-pro")
+	fmt.Println("msg", msg)
 	// resp, err := model.GenerateContent(ctx, genai.Text("Write a story about a magic backpack."))
 	resp, err := model.GenerateContent(ctx, genai.Text(msg))
 	if err != nil {
 		log.Println(err)
 	}
-	// log.Printf("resp %v", resp)
-	// Print the contents of Candidates
-	log.Printf("Candidates: %v", printCandidates(resp.Candidates))
-
-	// Print the contents of PromptFeedback
-	log.Printf("PromptFeedback: %v", printPromptFeedback(resp.PromptFeedback))
-	return ""
-}
-
-func printCandidates(candidates []*genai.Candidate) []string {
-	var result []string
-	for i, candidate := range candidates {
-		// Assuming String() is a method or function that formats the candidate
-		result = append(result, fmt.Sprintf("Candidate %d: %v", i, candidate))
+	log.Printf("resp %v", resp)
+	if resp == nil {
+		log.Println("本次没有输出内容")
+		return getJsonStr("让我想一想")
 	}
-	return result
+	str := ""
+	for _, candidate := range resp.Candidates {
+
+		if len(candidate.Content.Parts) > 0 {
+			str += fmt.Sprint(candidate.Content.Parts[0])
+			fmt.Println()
+		}
+	}
+	return getJsonStr(str)
 }
 
-func printPromptFeedback(feedback *genai.PromptFeedback) string {
-	// Assuming String() is a method or function that formats the prompt feedback
-	return fmt.Sprintf("BlockReason: %v", feedback.BlockReason)
+func getJsonStr(str string) string {
+	response := Response{
+		Result: str,
+	}
+
+	// 将 Response 结构体转换为 JSON 字符串
+	jsonStr, err := json.Marshal(response)
+	if err != nil {
+		log.Println("JSON 格式化错误", err)
+		return ""
+	}
+	return string(jsonStr)
 }
