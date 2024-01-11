@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -22,16 +23,23 @@ import (
  */
 
 var (
-	hostUrl   = "wss://aichat.xf-yun.com/v1/chat"
-	appid     = "XXXXXXXX"
-	apiSecret = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-	apiKey    = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+	hostUrl   string
+	appid     string
+	apiSecret string
+	apiKey    string
 )
+
+func init() {
+	hostUrl = "wss://aichat.xf-yun.com/v1/chat"
+	appid = os.Getenv("XUNFEI_APPID")
+	apiSecret = os.Getenv("XUNFEI_APISECRET")
+	apiKey = os.Getenv("XUNFEI_APIKEY")
+}
 
 type Xunfei struct {
 }
 
-func (x Xunfei) Chat(msg string) string {
+func (x Xunfei) Chat(msgs string) string {
 	// fmt.Println(HmacWithShaTobase64("hmac-sha256", "hello\nhello", "hello"))
 	// st := time.Now()
 	d := websocket.Dialer{
@@ -41,14 +49,13 @@ func (x Xunfei) Chat(msg string) string {
 	conn, resp, err := d.Dial(assembleAuthUrl1(hostUrl, apiKey, apiSecret), nil)
 	if err != nil {
 		panic(readResp(resp) + err.Error())
-		return ""
 	} else if resp.StatusCode != 101 {
 		panic(readResp(resp) + err.Error())
 	}
 
 	go func() {
 
-		data := genParams1(appid, "你是谁，可以干什么？")
+		data := genParams1(appid, msgs)
 		conn.WriteJSON(data)
 
 	}()
