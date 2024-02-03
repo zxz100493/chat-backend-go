@@ -13,28 +13,29 @@ import (
 )
 
 var (
-	ApiKey    string
-	ApiSecret string
+	APIKey    string
+	APISecret string
 )
 
 type Baidu struct {
 }
 
 func init() {
-	ApiKey = os.Getenv("BAIDU_CHAT_AI_API_KEY")
-	ApiSecret = os.Getenv("BAIDU_CHAT_AI_SECRET_KEY")
+	APIKey = os.Getenv("BAIDU_CHAT_AI_API_KEY")
+	APISecret = os.Getenv("BAIDU_CHAT_AI_SECRET_KEY")
 }
 
 func (b Baidu) Chat(msg string) string {
 	defer trace("baidu api")()
+
 	url := "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + GetAccessToken()
 
 	question := `{"messages":[{"role":"user","content":"` + msg + `"}]}`
 	headers := map[string]string{"Content-Type": "application/json"}
 	response, err := makeRequest(url, "POST", headers, strings.NewReader(question))
+
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 	}
 
 	return response
@@ -55,8 +56,9 @@ func trace(action string) func() {
  */
 func GetAccessToken() string {
 	url := "https://aip.baidubce.com/oauth/2.0/token"
-	postData := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", ApiKey, ApiSecret)
+	postData := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", APIKey, APISecret)
 	headers := map[string]string{"Content-Type": "application/x-www-form-urlencoded"}
+
 	defer trace("get access token")()
 
 	response, err := makeRequest(url, "POST", headers, strings.NewReader(postData))
@@ -66,13 +68,20 @@ func GetAccessToken() string {
 	}
 
 	accessTokenObj := map[string]string{}
-	json.Unmarshal([]byte(response), &accessTokenObj)
+
+	err = json.Unmarshal([]byte(response), &accessTokenObj)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+
 	return accessTokenObj["access_token"]
 }
 
 func makeRequest(url, method string, headers map[string]string, body io.Reader) (string, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, body)
+
 	if err != nil {
 		return "", err
 	}

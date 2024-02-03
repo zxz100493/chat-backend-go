@@ -19,11 +19,17 @@ var (
 )
 
 func InitLog(loglevel string) {
+	const MaxSize = 10
+
+	const MaxBackups = 5
+
+	const MaxAge = 30
+
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   "logs/test.log",
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     30,
+		MaxSize:    MaxSize,
+		MaxBackups: MaxBackups,
+		MaxAge:     MaxAge,
 		Compress:   false,
 	}
 	write := zapcore.AddSync(lumberJackLogger)
@@ -33,6 +39,7 @@ func InitLog(loglevel string) {
 	// warn  只能打印 warn
 	// debug->info->warn->error
 	var level zapcore.Level
+
 	switch loglevel {
 	case "debug":
 		level = zap.DebugLevel
@@ -45,6 +52,7 @@ func InitLog(loglevel string) {
 	default:
 		level = zap.InfoLevel
 	}
+
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
 		LevelKey:       "level",
@@ -68,6 +76,7 @@ func InitLog(loglevel string) {
 	if level == zap.DebugLevel {
 		writes = append(writes, zapcore.AddSync(os.Stdout))
 	}
+
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
 		// zapcore.NewJSONEncoder(encoderConfig),

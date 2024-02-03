@@ -13,11 +13,12 @@ var AiServiceMap = map[string]repository.AiRepository{
 }
 
 func ChatWithAi(msg string) interface{} {
-	// aiMode := "baidu"
 	aiMode := "xunfei"
 	aiSvc, exists := AiServiceMap[aiMode]
+
 	if !exists {
 		aiSvc = AiServiceMap["gemini"]
 	}
+
 	return aiSvc.Chat(msg)
 }

@@ -13,12 +13,11 @@ func NewRoute() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	server := gin.Default()
-	// server.Use(Cors())
-	// server.Use(Recovery)
+
 	group := server.Group("chat")
 	{
 		group.GET("/test", app.Chat)
-		// group.GET("/user/:uuid", v1.GetUserDetails)
 	}
+
 	return server
 }
