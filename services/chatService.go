@@ -7,18 +7,18 @@ import (
 )
 
 var AiServiceMap = map[string]repository.AiRepository{
-	"baidu":  gemini.Gemini{},
-	"xunfei": xunfei.Xunfei{},
-	"gemini": gemini.Gemini{},
+	"baidu":  &gemini.Gemini{},
+	"xunfei": &xunfei.Xunfei{},
+	"gemini": &gemini.Gemini{},
 }
 
 func ChatWithAi(msg string) interface{} {
-	aiMode := "xunfei"
+	aiMode := "gemini"
 	aiSvc, exists := AiServiceMap[aiMode]
 
 	if !exists {
 		aiSvc = AiServiceMap["gemini"]
 	}
 
-	return aiSvc.Chat(msg)
+	return aiSvc.New(msg).Chat()
 }

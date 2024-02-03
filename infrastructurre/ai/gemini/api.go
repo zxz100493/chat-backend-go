@@ -1,6 +1,9 @@
 package gemini
 
 import (
+	"chat-go/domain/repository"
+	"chat-go/infrastructurre/ai"
+	"chat-go/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,17 +14,35 @@ import (
 	"google.golang.org/api/option"
 )
 
+var (
+	APIKey     string
+	actionName = "Gemini api"
+)
+
 type Gemini struct {
+	ai.ChatMsg
 }
 
 type Response struct {
 	Result string `json:"result"`
 }
 
-func (g Gemini) Chat(msg string) string {
+func init() {
+	APIKey = os.Getenv("GENEMI_API_KEY")
+}
+
+func (g *Gemini) New(msg string) repository.AiRepository {
+	return &Gemini{ai.ChatMsg{Msg: msg, Resp: ""}}
+}
+
+func (g Gemini) Chat() string {
+	defer util.TraceAction(actionName + "request chat")()
+
+	msg := g.Msg
+
 	ctx := context.Background()
 	// Access your API key as an environment variable (see "Set up your API key" above)
-	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GENEMI_API_KEY")))
+	client, err := genai.NewClient(ctx, option.WithAPIKey(APIKey))
 	if err != nil {
 		log.Println("get client error", err)
 	}
@@ -49,11 +70,15 @@ func (g Gemini) Chat(msg string) string {
 	for _, candidate := range resp.Candidates {
 		if len(candidate.Content.Parts) > 0 {
 			str += fmt.Sprint(candidate.Content.Parts[0])
-			fmt.Println()
+			fmt.Println(str)
 		}
 	}
 
 	return getJSONStr(str)
+}
+
+func (g Gemini) Response() string {
+	return ""
 }
 
 func getJSONStr(str string) string {

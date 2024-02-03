@@ -1,5 +1,7 @@
 package repository
 
 type AiRepository interface {
-	Chat(msg string) string
+	Chat() string
+	Response() string
+	New(msg string) AiRepository
 }

@@ -1,7 +1,9 @@
 package baidu
 
 import (
-	"chat-go/infrastructurre/log"
+	"chat-go/domain/repository"
+	"chat-go/infrastructurre/ai"
+	"chat-go/util"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,15 +11,20 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 var (
-	APIKey    string
-	APISecret string
+	APIKey     string
+	APISecret  string
+	actionName = "baidu api"
 )
 
 type Baidu struct {
+	ai.ChatMsg
+}
+
+func (b *Baidu) New(msg string) repository.AiRepository {
+	return &Baidu{ai.ChatMsg{Msg: msg, Resp: ""}}
 }
 
 func init() {
@@ -25,9 +32,10 @@ func init() {
 	APISecret = os.Getenv("BAIDU_CHAT_AI_SECRET_KEY")
 }
 
-func (b Baidu) Chat(msg string) string {
-	defer trace("baidu api")()
+func (b *Baidu) Chat() string {
+	defer util.TraceAction(actionName + "request chat")()
 
+	msg := b.Msg
 	url := "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + GetAccessToken()
 
 	question := `{"messages":[{"role":"user","content":"` + msg + `"}]}`
@@ -41,13 +49,8 @@ func (b Baidu) Chat(msg string) string {
 	return response
 }
 
-func trace(action string) func() {
-	start := time.Now()
-	log.Logger.Info("before "+action, log.String("start_time", start.String()))
-
-	return func() {
-		log.Logger.Info("after "+action, log.String("used_time", time.Since(start).String()))
-	}
+func (b Baidu) Response() string {
+	return ""
 }
 
 /**
@@ -59,7 +62,7 @@ func GetAccessToken() string {
 	postData := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", APIKey, APISecret)
 	headers := map[string]string{"Content-Type": "application/x-www-form-urlencoded"}
 
-	defer trace("get access token")()
+	defer util.TraceAction(actionName + "get access token")()
 
 	response, err := makeRequest(url, "POST", headers, strings.NewReader(postData))
 	if err != nil {

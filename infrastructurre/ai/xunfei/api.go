@@ -1,6 +1,9 @@
 package xunfei
 
 import (
+	"chat-go/domain/repository"
+	"chat-go/infrastructurre/ai"
+	"chat-go/util"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -23,10 +26,11 @@ import (
  */
 
 var (
-	hostURL   string
-	appid     string
-	apiSecret string
-	apiKey    string
+	hostURL    string
+	appid      string
+	apiSecret  string
+	apiKey     string
+	actionName = "xunfei api"
 )
 
 func init() {
@@ -37,9 +41,18 @@ func init() {
 }
 
 type Xunfei struct {
+	ai.ChatMsg
 }
 
-func (x Xunfei) Chat(msgs string) string {
+func (x *Xunfei) New(msg string) repository.AiRepository {
+	return &Xunfei{ai.ChatMsg{Msg: msg, Resp: ""}}
+}
+
+func (x Xunfei) Chat() string {
+	defer util.TraceAction(actionName + "request chat")()
+
+	msgs := x.Msg
+
 	const handshakeTimeout = 5 * time.Second
 
 	d := websocket.Dialer{
@@ -174,6 +187,15 @@ func (x Xunfei) Chat(msgs string) string {
 	return answer
 }
 
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+func (x Xunfei) Response() string {
+	return ""
+}
+
 // 生成参数
 func genParams1(appid, question string) map[string]interface{} { // 根据实际情况修改返回的数据结构和字段名
 	messages := []Message{
@@ -255,9 +277,4 @@ func readResp(resp *http.Response) string {
 	}
 
 	return fmt.Sprintf("code=%d,body=%s", resp.StatusCode, string(b))
-}
-
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
 }
