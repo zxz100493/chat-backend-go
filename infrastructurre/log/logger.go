@@ -18,7 +18,7 @@ var (
 	Float32 = zap.Float32
 )
 
-func InitLog(loglevel string) {
+func InitLog(loglevel, path string) {
 	const MaxSize = 10
 
 	const MaxBackups = 5
@@ -26,7 +26,7 @@ func InitLog(loglevel string) {
 	const MaxAge = 30
 
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "logs/test.log",
+		Filename:   path + "/test.log",
 		MaxSize:    MaxSize,
 		MaxBackups: MaxBackups,
 		MaxAge:     MaxAge,
@@ -61,8 +61,8 @@ func InitLog(loglevel string) {
 		MessageKey:     "msg",
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.LowercaseLevelEncoder,  // 小写编码器
-		EncodeTime:     zapcore.ISO8601TimeEncoder,     // ISO8601 UTC 时间格式
+		EncodeLevel:    zapcore.LowercaseLevelEncoder, // 小写编码器
+		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000"),
 		EncodeDuration: zapcore.SecondsDurationEncoder, //
 		EncodeCaller:   zapcore.FullCallerEncoder,      // 全路径编码器
 		EncodeName:     zapcore.FullNameEncoder,
