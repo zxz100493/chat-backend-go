@@ -1,6 +1,0 @@
-version: 1.0
-
-AppPort: ":8866"
-
-Log:
-  path: "logs"
