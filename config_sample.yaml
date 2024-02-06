@@ -1,0 +1,15 @@
+version: 1.0
+
+AppPort: ":8866"
+
+Log:
+  path: "logs"
+
+baidu: api_key:""
+  api_secret:""
+
+xunfei: app_id:""
+  api_key:""
+  api_secret:""
+
+genemi: api_key:""

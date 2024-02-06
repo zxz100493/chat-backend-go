@@ -1,4 +1,5 @@
 .air.toml
 tmp/
 test.log
+config.yaml
 logs/*

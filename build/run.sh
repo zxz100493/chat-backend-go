@@ -18,4 +18,4 @@ fi
 
 set -e
 
-docker run -d --name ${containerName} -p 8888:8888 -p 8080:8080 apps:v1
+docker run -d --name ${containerName} -p 8866:8866 -p 8080:8080 apps:v1
