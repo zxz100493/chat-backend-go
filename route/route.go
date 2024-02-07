@@ -1,7 +1,7 @@
 package route
 
 import (
-	"chat-go/app"
+	"chat-go/app/api"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +16,7 @@ func NewRoute() *gin.Engine {
 
 	group := server.Group("chat")
 	{
-		group.GET("/test", app.Chat)
+		group.GET("/test", api.Chat)
 	}
 
 	return server

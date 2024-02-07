@@ -1,6 +1,7 @@
 package baidu
 
 import (
+	"chat-go/app"
 	"chat-go/domain/repository"
 	"chat-go/infrastructurre/ai"
 	"chat-go/util"
@@ -24,6 +25,11 @@ type Baidu struct {
 }
 
 func (b *Baidu) New(msg string) repository.AiRepository {
+	if APIKey == "" || APISecret == "" {
+		APIKey = app.Config.Baidu.APIKey
+		APISecret = app.Config.Baidu.APISecret
+	}
+
 	return &Baidu{ai.ChatMsg{Msg: msg, Resp: ""}}
 }
 

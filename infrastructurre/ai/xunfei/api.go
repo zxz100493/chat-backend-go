@@ -1,6 +1,7 @@
 package xunfei
 
 import (
+	"chat-go/app"
 	"chat-go/domain/repository"
 	"chat-go/infrastructurre/ai"
 	"chat-go/util"
@@ -45,6 +46,12 @@ type Xunfei struct {
 }
 
 func (x *Xunfei) New(msg string) repository.AiRepository {
+	if appid == "" || apiSecret == "" || apiKey == "" {
+		appid = app.Config.Xunfei.AppID
+		apiSecret = app.Config.Xunfei.APISecret
+		apiKey = app.Config.Xunfei.APIKey
+	}
+
 	return &Xunfei{ai.ChatMsg{Msg: msg, Resp: ""}}
 }
 

@@ -1,6 +1,7 @@
 package gemini
 
 import (
+	"chat-go/app"
 	"chat-go/domain/repository"
 	"chat-go/infrastructurre/ai"
 	"chat-go/util"
@@ -32,6 +33,13 @@ func init() {
 }
 
 func (g *Gemini) New(msg string) repository.AiRepository {
+	fmt.Println("get genemi api key", APIKey)
+	fmt.Println("app config", app.Config.Genemi.APIKey)
+
+	if APIKey == "" {
+		APIKey = app.Config.Genemi.APIKey
+	}
+
 	return &Gemini{ai.ChatMsg{Msg: msg, Resp: ""}}
 }
 

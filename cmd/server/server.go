@@ -1,6 +1,7 @@
 package server
 
 import (
+	"chat-go/app"
 	"chat-go/config"
 	"chat-go/infrastructurre/log"
 	"chat-go/route"
@@ -15,6 +16,8 @@ const maxHeaderBytes = 1 << 20
 
 func StartServer() {
 	config.Init("./")
+
+	app.Config = config.Instance
 	cfg := config.Instance
 
 	log.InitLog("Debug", cfg.Log.Path)

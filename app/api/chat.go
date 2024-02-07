@@ -1,4 +1,4 @@
-package app
+package api
 
 import (
 	"chat-go/services"

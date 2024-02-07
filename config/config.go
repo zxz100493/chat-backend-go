@@ -11,9 +11,25 @@ var Instance *Config
 
 type Config struct {
 	AppPort string `yaml:"AppPort"`
-	Log     struct {
+
+	Log struct {
 		Path string `yaml:"Path"`
 	} `yaml:"Log"`
+
+	Baidu struct {
+		APIKey    string `yaml:"apikey"`
+		APISecret string `yaml:"apiSecret"`
+	} `yaml:"Baidu"`
+
+	Xunfei struct {
+		AppID     string `yaml:"app_id"`
+		APIKey    string `yaml:"api_key"`
+		APISecret string `yaml:"api_secret"`
+	} `yaml:"Xunfei"`
+
+	Genemi struct {
+		APIKey string `yaml:"api_key"`
+	} `yaml:"Genemi"`
 }
 
 func Init(filename string) *Config {
@@ -37,6 +53,8 @@ func Init(filename string) *Config {
 	config.OnConfigChange(func(e fsnotify.Event) {
 		fmt.Println("config file changed", e.Name)
 	})
+
+	fmt.Printf("config init %v", Instance)
 
 	return Instance
 }
